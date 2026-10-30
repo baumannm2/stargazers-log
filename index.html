@@ -1,15 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
   <head>
     <meta charset="utf-8">
-    <title>Stargazers log</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#eef2ed">
+    <title>Wetterdashboard | DWD WarnWetter</title>
+    <link rel="preconnect" href="https://app-prod-ws.warnwetter.de">
     <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
   </head>
-  
   <body>
-    <h1>Stargazers log</h1>
-    <p>A log of the repositories I've starred.</p>
-    <ul id="starred"></ul>
-    <script src="script.js"></script>
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="DWD Wetterdashboard Startseite">
+        <span class="brand-mark" aria-hidden="true">W</span>
+        <span><strong>Wetter</strong><small>DEUTSCHER WETTERDIENST</small></span>
+      </a>
+      <span class="topbar-note">WarnWetter · Stationsdaten</span>
+    </header>
+
+    <main id="top" class="dashboard">
+      <section class="page-heading">
+        <div>
+          <p class="eyebrow">WETTERLAGE DEUTSCHLAND</p>
+          <h1>Wetter im Blick.</h1>
+          <p class="subtitle">Tagesprognose deiner DWD-Wetterstation.</p>
+        </div>
+        <form id="station-form" class="station-form">
+          <label for="station-id">Stations-ID</label>
+          <div class="form-controls">
+            <input id="station-id" name="stationId" inputmode="numeric" pattern="[0-9]+" value="10782" required aria-label="DWD Stations-ID">
+            <button type="submit"><span aria-hidden="true">↻</span> Aktualisieren</button>
+          </div>
+        </form>
+      </section>
+
+      <div class="station-strip">
+        <div>
+          <span class="station-dot" aria-hidden="true"></span>
+          <strong id="station-label">Waldmünchen · DWD-Station 10782</strong>
+        </div>
+        <span id="api-status" class="api-status" role="status" aria-live="polite">Daten werden geladen</span>
+      </div>
+
+      <section id="current-panel" class="current-panel" aria-live="polite">
+        <div class="empty-state">
+          <span class="empty-symbol" aria-hidden="true">◌</span>
+          <div><h2>Wetterdaten werden geladen</h2><p>Die aktuelle Vorhersage wird beim Deutschen Wetterdienst abgefragt.</p></div>
+        </div>
+      </section>
+
+      <section class="forecast-section">
+        <div class="section-heading">
+          <div><p class="eyebrow">AUSBLICK</p><h2>Die kommenden Tage</h2></div>
+          <span id="forecast-count" class="section-meta">Noch keine Prognose</span>
+        </div>
+        <div id="forecast-grid" class="forecast-grid"></div>
+      </section>
+
+      <footer class="page-footer">
+        <span>Datenquelle <a href="https://www.dwd.de/" target="_blank" rel="noreferrer">Deutscher Wetterdienst</a></span>
+        <span id="updated-at">Warte auf Daten</span>
+      </footer>
+    </main>
   </body>
 </html>
