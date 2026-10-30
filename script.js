@@ -1,4 +1,4 @@
-const apiBase = "/api/weather?stationId=";
+const apiBase = "https://s3.eu-central-1.amazonaws.com/app-prod-static.warnwetter.de/v16/forecast_mosmix_";
 const stationForm = document.querySelector("#station-form");
 const stationInput = document.querySelector("#station-id");
 const stationLabel = document.querySelector("#station-label");
@@ -160,10 +160,10 @@ async function loadStation(stationId) {
   currentPanel.setAttribute("aria-busy", "true");
 
   try {
-    const response = await fetch(`${apiBase}${encodeURIComponent(stationId)}`, { cache: "no-store" });
+    const response = await fetch(`${apiBase}${encodeURIComponent(stationId)}.json`, { cache: "no-store" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const payload = await response.json();
-    const days = payload[stationId];
+    const days = payload.days;
     if (!Array.isArray(days)) throw new Error("Unerwartetes Datenformat");
 
     apiStatus.dataset.state = "success";
@@ -182,8 +182,8 @@ async function loadStation(stationId) {
     apiStatus.dataset.state = "error";
     apiStatus.textContent = "DWD gerade nicht erreichbar";
     updatedAt.textContent = "Abruf fehlgeschlagen";
-    renderEmpty(stationId, "Die Wetterdaten konnten nicht geladen werden.", "Der DWD-Abruf ist fehlgeschlagen. Prüfe die Verbindung und starte den lokalen Server erneut.");
-    console.error("DWD stationOverview request failed:", error);
+    renderEmpty(stationId, "Die Wetterdaten konnten nicht geladen werden.", "Der DWD-Abruf ist fehlgeschlagen. Prüfe die Stations-ID, deine Verbindung oder die Verfügbarkeit des DWD-Endpunkts.");
+    console.error("DWD MOSMIX request failed:", error);
   } finally {
     currentPanel.removeAttribute("aria-busy");
   }
