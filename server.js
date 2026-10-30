@@ -11,41 +11,12 @@ const staticFiles = {
   "/script.js": ["script.js", "text/javascript; charset=utf-8"]
 };
 
-function sendJson(response, status, payload) {
-  response.writeHead(status, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
-  response.end(JSON.stringify(payload));
-}
-
-http.createServer(async (request, response) => {
+http.createServer((request, response) => {
   const url = new URL(request.url, `http://${request.headers.host || "localhost"}`);
 
   if (request.method !== "GET") {
     response.writeHead(405, { Allow: "GET" });
     response.end("Method not allowed");
-    return;
-  }
-
-  if (url.pathname === "/api/weather") {
-    const stationId = url.searchParams.get("stationId") || "";
-    if (!/^\d+$/.test(stationId)) {
-      sendJson(response, 400, { error: "Ungültige Stations-ID" });
-      return;
-    }
-
-    try {
-      const upstreamUrl = `https://app-prod-ws.warnwetter.de/v16/stationOverview?stationIds=${encodeURIComponent(stationId)}`;
-      const upstream = await fetch(upstreamUrl, { headers: { Accept: "application/json" }, signal: AbortSignal.timeout(12000) });
-      if (!upstream.ok) {
-        sendJson(response, 502, { error: `DWD antwortete mit HTTP ${upstream.status}` });
-        return;
-      }
-
-      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
-      response.end(await upstream.text());
-    } catch (error) {
-      console.error("DWD request failed:", error);
-      sendJson(response, 502, { error: "DWD-Daten konnten nicht abgerufen werden" });
-    }
     return;
   }
 
