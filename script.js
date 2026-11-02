@@ -26,6 +26,17 @@ const weatherTypes = {
   31: ["💨", "Wind"]
 };
 
+const moonPhases = {
+  0: ["🌑", "Neumond"],
+  1: ["🌒", "Zunehmende Sichel"],
+  2: ["🌓", "Erstes Viertel"],
+  3: ["🌔", "Zunehmender Mond"],
+  4: ["🌕", "Vollmond"],
+  5: ["🌖", "Abnehmender Mond"],
+  6: ["🌗", "Letztes Viertel"],
+  7: ["🌘", "Abnehmende Sichel"]
+};
+
 function element(tag, className, text) {
   const node = document.createElement(tag);
   if (className) node.className = className;
@@ -66,6 +77,18 @@ function windDirection(value) {
 function weatherFor(day) {
   const iconId = Number(day.icon ?? day.icon1 ?? day.icon2);
   return weatherTypes[iconId] || ["◌", "Wetterlage"];
+}
+
+function weatherCodeLabel(value) {
+  if (value === null || value === undefined || value === "") return "Keine Angabe";
+  const weather = weatherTypes[Number(value)];
+  return weather ? `${weather[0]} ${weather[1]}` : "Unbekannte Wetterlage";
+}
+
+function moonPhaseLabel(value) {
+  if (value === null || value === undefined || value === "") return "Keine Angabe";
+  const phase = moonPhases[Number(value)];
+  return phase ? `${phase[0]} ${phase[1]}` : "Unbekannte Mondphase";
 }
 
 function metric(label, value) {
@@ -133,9 +156,9 @@ function renderDay(day, index) {
     metric("Böen", `${numberValue(day.windGust, 10)} m/s`),
     metric("Windrichtung", windDirection(day.windDirection)),
     metric("Sonne", day.sunshine == null ? "Keine Angabe" : `${numberValue(day.sunshine / 3600)} Std.`),
-    metric("Mondphase (Code)", day.moonPhase == null ? "Keine Angabe" : String(day.moonPhase)),
-    metric("Symbol Tag", day.icon1 == null ? "Keine Angabe" : String(day.icon1)),
-    metric("Symbol Nacht", day.icon2 == null ? "Keine Angabe" : String(day.icon2))
+    metric("Mondphase", moonPhaseLabel(day.moonPhase)),
+    metric("Symbol Tag", weatherCodeLabel(day.icon1)),
+    metric("Symbol Nacht", weatherCodeLabel(day.icon2))
   );
   card.append(details);
 
